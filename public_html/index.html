@@ -6,10 +6,13 @@
     <title>Multiposter</title>
     <link rel="stylesheet" href="/css/index.css">
     <script src="/js/vue.js"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
 </head>
 <body>
     <div id="app">
         <input v-model="title" id="title" type="text" />
+        <br>
+        <emoji-picker @click="console.log"></emoji-picker>
         <br>
         <textarea v-model="content" id="content"></textarea>
         <br>
