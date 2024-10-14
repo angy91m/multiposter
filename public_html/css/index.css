@@ -1,0 +1,13 @@
+#title, #content {
+    width: 97%;
+    min-height: 30px;
+    margin: 9px;
+    font-family: sans-serif;
+}
+#title {
+    font-size: 30px;
+}
+#image {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
