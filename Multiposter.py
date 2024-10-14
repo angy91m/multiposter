@@ -41,18 +41,18 @@ async def _starter():
     self_url = 'http://localhost:' + str(site._server.sockets[0].getsockname()[1])
     #self_url = 'http://localhost:3091'
     
-    if sys.platform=='win32':
-        subprocess.Popen(['start', self_url])
-    elif sys.platform=='darwin':
-        subprocess.Popen(['open', self_url])
-    else:
-        try:
-            subprocess.Popen(['xdg-open', self_url])
-        except OSError:
-            print('Please open a browser on: '+self_url)
+    # if sys.platform=='win32':
+    #     os.startfile(self_url)
+    # elif sys.platform=='darwin':
+    #     subprocess.Popen(['open', self_url])
+    # else:
+    #     try:
+    #         subprocess.Popen(['xdg-open', self_url])
+    #     except OSError:
+    #         print('Please open a browser on: '+self_url)
     loop = asyncio.get_event_loop()
     gui = create_gui(loop)
-    gui.run()
+    loop.run()
 
 
 def start():
