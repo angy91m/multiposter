@@ -6,12 +6,12 @@ import asyncio
 import base64
 from CustomGui import CustomGui
 
-def create_gui(loop):
-    gui = CustomGui(loop)
+def create_gui(loop, buttonCb, interval):
+    gui = CustomGui(loop, buttonCb, interval)
     gui.title("Multiposter")
     return gui
 
-async def _starter():
+async def _starter(interval=1/120):
     app = web.Application(middlewares=[IndexMiddleware()])
     routes = web.RouteTableDef()
 
@@ -39,20 +39,21 @@ async def _starter():
     site = web.TCPSite(runner, 'localhost', 3091)
     await site.start()
     self_url = 'http://localhost:' + str(site._server.sockets[0].getsockname()[1])
-    #self_url = 'http://localhost:3091'
-    
-    # if sys.platform=='win32':
-    #     os.startfile(self_url)
-    # elif sys.platform=='darwin':
-    #     subprocess.Popen(['open', self_url])
-    # else:
-    #     try:
-    #         subprocess.Popen(['xdg-open', self_url])
-    #     except OSError:
-    #         print('Please open a browser on: '+self_url)
+    def start_browser():
+        if sys.platform=='win32':
+            os.startfile(self_url)
+        elif sys.platform=='darwin':
+            subprocess.Popen(['open', self_url])
+        else:
+            try:
+                subprocess.Popen(['xdg-open', self_url])
+            except OSError:
+                print('Please open a browser on: '+self_url)
+    start_browser()
     loop = asyncio.get_event_loop()
-    gui = create_gui(loop)
-    loop.run()
+    gui = create_gui(loop, start_browser, interval)
+    while True:
+        await asyncio.sleep(interval)
 
 
 def start():
