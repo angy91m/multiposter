@@ -4,6 +4,9 @@
     margin: 9px;
     font-family: sans-serif;
 }
+#content {
+    height: 200px;
+}
 #title {
     font-size: 30px;
 }
