@@ -8,7 +8,9 @@ class CustomGui(tk.Tk):
         self.protocol("WM_DELETE_WINDOW", self.close)
         self.tasks = []
         self.tasks.append(loop.create_task(self.updater(interval)))
-        tk.Button(self, text ="Apri", command = buttonCb)
+        self.geometry("100x100")
+        btn = tk.Button(self, text ="Apri", command = buttonCb)
+        btn.place(x=50, y=50)
     async def updater(self, interval):
         while True:
             self.update()

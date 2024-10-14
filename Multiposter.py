@@ -36,7 +36,7 @@ async def _starter(interval=1/120):
     app.add_routes(routes)
     runner = web.AppRunner(app)
     await runner.setup()
-    site = web.TCPSite(runner, 'localhost', 3091)
+    site = web.TCPSite(runner, 'localhost', 0)
     await site.start()
     self_url = 'http://localhost:' + str(site._server.sockets[0].getsockname()[1])
     def start_browser():
@@ -51,7 +51,7 @@ async def _starter(interval=1/120):
                 print('Please open a browser on: '+self_url)
     start_browser()
     loop = asyncio.get_event_loop()
-    gui = create_gui(loop, start_browser, interval)
+    create_gui(loop, start_browser, interval)
     while True:
         await asyncio.sleep(interval)
 
