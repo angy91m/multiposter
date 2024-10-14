@@ -4,7 +4,8 @@ const app = new Vue({
         title: '',
         content: '',
         image: {},
-        posting: false
+        posting: false,
+        showEmojiPicker: false
     },
     methods: {
         async postContent() {
@@ -40,6 +41,15 @@ const app = new Vue({
             }
             delete this.image.name;
             delete this.image.content;
+        },
+        addEmojiToInput({detail: emoji}) {
+            console.log(emoji);
         }
+    },
+    mounted() {
+        document.querySelector('#emoji-picker').addEventListener('emoji-click', this.addEmojiToInput);
+    },
+    beforeUnmount() {
+        document.querySelector('#emoji-picker').removeEventListener('emoji-click', this.addEmojiToInput);
     }
 });

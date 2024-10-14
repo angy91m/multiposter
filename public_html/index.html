@@ -12,7 +12,8 @@
     <div id="app">
         <input v-model="title" id="title" type="text" />
         <br>
-        <emoji-picker @click="console.log"></emoji-picker>
+        <button @click="showEmojiPicker = !showEmojiPicker">Emoji</button>
+        <emoji-picker id="emoji-picker" v-show="showEmojiPicker"></emoji-picker>
         <br>
         <textarea v-model="content" id="content"></textarea>
         <br>
