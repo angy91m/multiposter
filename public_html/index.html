@@ -10,12 +10,12 @@
 </head>
 <body>
     <div id="app">
-        <input v-model="title" id="title" type="text" />
+        <input ref="titleInput" v-model="title" @click="setEmojiInputField('titleInput')" @input="setEmojiInputField('titleInput')" id="title" type="text" />
         <br>
-        <button @click="showEmojiPicker = !showEmojiPicker">Emoji</button>
-        <emoji-picker id="emoji-picker" v-show="showEmojiPicker"></emoji-picker>
+        <button @click="toggleEmojiPicker">Emoji</button>
+        <emoji-picker ref="emojiPicker" v-show="showEmojiPicker"></emoji-picker>
         <br>
-        <textarea v-model="content" id="content"></textarea>
+        <textarea ref="contentInput" v-model="content" @click="setEmojiInputField('contentInput')" @input="setEmojiInputField('contentInput')" id="content"></textarea>
         <br>
         <input @change="setImage" id="image" type="file" />
         <br>

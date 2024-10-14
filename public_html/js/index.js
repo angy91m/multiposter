@@ -5,7 +5,8 @@ const app = new Vue({
         content: '',
         image: {},
         posting: false,
-        showEmojiPicker: false
+        showEmojiPicker: false,
+        lastEmojiInputField: ''
     },
     methods: {
         async postContent() {
@@ -42,14 +43,29 @@ const app = new Vue({
             delete this.image.name;
             delete this.image.content;
         },
+        setEmojiInputField(ref) {
+            this.lastEmojiInputField = ref;
+        },
         addEmojiToInput({detail: emoji}) {
-            console.log(emoji);
+            if (this.lastEmojiInputField) {
+                const input = this.$refs[this.lastEmojiInputField],
+                cursorPosition = input.selectionEnd,
+                vKey = this.lastEmojiInputField.slice(0, -5),
+                start = this[vKey].substring(0, input.selectionStart),
+                end = this[vKey].substring(input.selectionStart);
+                this[vKey] = `${start}${emoji.unicode}${end}`;
+                input.focus();
+                this.$nextTick(() => input.selectionEnd = cursorPosition + emoji.unicode.length);
+            }
+        },
+        toggleEmojiPicker() {
+            this.showEmojiPicker = !this.showEmojiPicker;
         }
     },
     mounted() {
-        document.querySelector('#emoji-picker').addEventListener('emoji-click', this.addEmojiToInput);
+        this.$refs.emojiPicker.addEventListener('emoji-click', this.addEmojiToInput);
     },
     beforeUnmount() {
-        document.querySelector('#emoji-picker').removeEventListener('emoji-click', this.addEmojiToInput);
+        this.$refs.emojiPicker.removeEventListener('emoji-click', this.addEmojiToInput);
     }
 });
