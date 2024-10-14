@@ -49,9 +49,9 @@ async def _starter(interval=1/120):
                 subprocess.Popen(['xdg-open', self_url])
             except OSError:
                 print('Please open a browser on: '+self_url)
-    start_browser()
     loop = asyncio.get_event_loop()
     create_gui(loop, start_browser, interval)
+    start_browser()
     while True:
         await asyncio.sleep(interval)
 
