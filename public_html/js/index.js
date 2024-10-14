@@ -1,7 +1,6 @@
 const app = new Vue({
     el: '#app',
     data: {
-        title: '',
         content: '',
         image: {},
         posting: false,
@@ -11,7 +10,7 @@ const app = new Vue({
     methods: {
         async postContent() {
             this.posting = true;
-            const body = { title: this.title, content: this.content };
+            const body = { content: this.content };
             if (this.image.name) {
                 body.image = this.image;
             }
