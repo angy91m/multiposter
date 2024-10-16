@@ -75,7 +75,7 @@ async def _starter(cb, interval=1/120):
                 "content": data['content'],
                 "socials": data['socials']
             }
-            if data.get('image'):
+            if 'image' in data:
                 image_content = base64.b64decode(data['image']['content'].split('base64,')[1])
                 image_type = magic.from_buffer(image_content, mime=True)
                 if (image_type[0:6] != 'image/'):
