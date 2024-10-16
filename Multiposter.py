@@ -1,19 +1,50 @@
-import os, sys, subprocess, asyncio, base64, json
+import os, sys, subprocess, asyncio, base64, json, magic, mimetypes
 from inspect import iscoroutinefunction
 from aiohttp import web
 from aiohttp_index import IndexMiddleware
 from CustomGui import CustomGui
+from ftplib import FTP_TLS
 
-app_path = '.'
-if not getattr(sys, 'frozen', False):
-    app_path = os.path.dirname(os.path.realpath(__file__))
+app_path = os.path.dirname(os.path.realpath(__file__))
+if getattr(sys, 'frozen', False):
+    app_path = sys._MEIPASS
 
-def _create_gui(loop, buttonCb, interval):
-    gui = CustomGui(loop, buttonCb, interval)
+def random_hex(length=6):
+    return os.urandom(length).hex()
+
+def load_config():
+    with open(app_path + '/config.json') as f:
+        return json.load(f)
+
+def upload_image(config, image_path, image_name):
+    availEncodings = ['Latin-1', 'utf-8']
+    uploaded = False
+    for encoding in availEncodings:
+        try:
+            ftp = FTP_TLS(encoding=encoding)
+            ftp.connect(config['ftpHost'], config['ftpPort'])
+            ftp.login(config['ftpUser'], config['ftpPassword'])
+            ftp.prot_p()
+            ftp.encoding = 'utf-8'
+            ftp.cwd(config['ftpPath'])
+            with open(image_path, 'rb') as f:
+                ftp.storbinary('STOR '+ image_name, f)
+            ftp.quit()
+            uploaded = True
+            break
+        except Exception as e:
+            print(e)
+    if not uploaded:
+        print('Failed to upload image: ' + image_name)
+        raise Exception('Failed to upload image: ' + image_name)
+
+def _create_gui(loop, buttonCb, stopLoop, interval):
+    gui = CustomGui(loop, buttonCb, stopLoop, interval)
     gui.title("Multiposter")
     return gui
 
 async def _starter(cb, interval=1/120):
+    config = load_config()
     app = web.Application(middlewares=[IndexMiddleware()])
     routes = web.RouteTableDef()
 
@@ -29,15 +60,32 @@ async def _starter(cb, interval=1/120):
             }
             if data.get('image'):
                 image_content = base64.b64decode(data['image']['content'].split('base64,')[1])
-                if not os.path.isdir('C:/temp'):
-                    os.mkdir('C:/temp')
-                with open('C:/tmp/mpop-post-image.png', 'wb') as f:
+                image_type = magic.from_buffer(image_content, mime=True)
+                if (image_type[0:6] != 'image/'):
+                    return web.Response(
+                        status=400,
+                        content_type='application/json',
+                        text=json.dumps({"error": "Invalid image type"})
+                    )
+                image_ext = mimetypes.guess_extension(image_type)
+                if image_ext is None:
+                    return web.Response(
+                        status=400,
+                        content_type='application/json',
+                        text=json.dumps({"error": "Invalid image type"})
+                    )
+                image_name = 'mpop-post-image-' + random_hex() + image_ext
+                if not os.path.isdir(app_path + '/uploaded_imgs'):
+                    os.mkdir(app_path + '/uploaded_imgs')
+                with open(app_path + '/uploaded_imgs/' + image_name, 'wb') as f:
                     f.write(image_content)
+                upload_image(config, app_path + '/uploaded_imgs/' + image_name, image_name)
                 post['image'] = image_content
-                post['image_url'] = data['image']['content']
-                post['image_name'] = data['image']['name']
-                post['image_type'] = data['image']['type']
-                post['image_path'] = 'C:/tmp/mpop-post-image.png'
+                post['image_url'] = config['defaultUrl'] + '/' + image_name
+                post['image_original_name'] = data['image']['name']
+                post['image_name'] = image_name
+                post['image_type'] = image_type
+                post['image_path'] = app_path + '/uploaded_imgs/' + image_name
             try:
                 if (iscoroutinefunction(cb)):
                     await cb(post)
@@ -50,7 +98,8 @@ async def _starter(cb, interval=1/120):
                     content_type='application/json',
                     text=json.dumps({"error": str(e)})
                 )
-        except:
+        except Exception as e:
+            print(e)
             return web.Response(
                 status=400,
                 content_type='application/json',
@@ -74,10 +123,17 @@ async def _starter(cb, interval=1/120):
             except OSError:
                 print('Please open a browser on: '+self_url)
     loop = asyncio.get_event_loop()
-    _create_gui(loop, start_browser, interval)
+    continue_loop = True
+    def stopLoop():
+        nonlocal continue_loop
+        continue_loop = False
+    
+    _create_gui(loop, start_browser, stopLoop, interval)
     start_browser()
-    while True:
+    while continue_loop:
         await asyncio.sleep(interval)
+    loop.stop()
+    exit(0)
 
 
 def start(cb):

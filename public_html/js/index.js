@@ -2,17 +2,21 @@ const app = new Vue({
     el: '#app',
     data: {
         content: '',
-        image: {},
+        imageName: '',
+        imageContent: '',
         posting: false,
         showEmojiPicker: false,
-        lastEmojiInputField: ''
+        lastEmojiInputField: '',
     },
     methods: {
         async postContent() {
             this.posting = true;
             const body = { content: this.content };
-            if (this.image.name) {
-                body.image = this.image;
+            if (this.imageName) {
+                body.image = {
+                    name: this.imageName,
+                    content: this.imageContent
+                };
             }
             try {
                 const res = await fetch('/post', {
@@ -24,7 +28,11 @@ const app = new Vue({
                 });
                 if (res.ok) {
                     this.content = '';
-                    this.image = {};
+                    this.imageName = '';
+                    this.imageContent = '';
+                    const imgInput = document.getElementById('image');
+                    imgInput.value = null;
+                    imgInput.dispatchEvent(new Event('change'));
                     alert('Postato!');
                 } else if (res.status === 400) {
                     try {
@@ -48,16 +56,27 @@ const app = new Vue({
                 if (/^image\/*/.test(imageFile.type)) {
                     const reader = new FileReader();
                     reader.onload = () => {
-                        this.image.name = imageFile.name;
-                        this.image.type = imageFile.type;
-                        this.image.content = reader.result;
+                        this.imageName = imageFile.name;
+                        this.imageContent = reader.result;
                     };
                     reader.readAsDataURL(imageFile);
                     return;
                 }
             }
-            delete this.image.name;
-            delete this.image.content;
+            if (e.target.files.length) {
+                alert('File non supportato');
+                e.target.value = null;
+                this.$nextTick(() => e.target.dispatchEvent(new Event('change')));
+            }
+            this.imageName = '';
+            this.imageContent = '';
+        },
+        deleteImage() {
+            this.imageName = '';
+            this.imageContent = '';
+            const imgInput = document.getElementById('image');
+            imgInput.value = null;
+            imgInput.dispatchEvent(new Event('change'));
         },
         setEmojiInputField(ref) {
             this.lastEmojiInputField = ref;

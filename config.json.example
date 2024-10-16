@@ -1,0 +1,8 @@
+{
+    "ftpHost": "ftp.test.org",
+    "ftpPort": 21,
+    "ftpUser": "test",
+    "ftpPassword": "password",
+    "ftpPath": "/uploaded_imgs",
+    "defaultUrl": "https://test.org/uploaded_imgs"
+}

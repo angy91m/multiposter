@@ -16,6 +16,9 @@
         <emoji-picker ref="emojiPicker" v-show="showEmojiPicker"></emoji-picker>
         <br>
         <input @change="setImage" id="image" type="file" />
+        <button @click="deleteImage">Cancella</button>
+        <br>
+        <img id="img-show" v-show="imageName" :src="imageContent" width="250" />
         <br>
         <button @click="postContent" :disabled="posting" id="post-button">Post</button>
     </div>
