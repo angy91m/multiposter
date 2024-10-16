@@ -22,7 +22,8 @@
         <br>
         <br>
         <template v-for="social in socials">
-            <label :for="social + '-checkbox'">{{ social }} <input :id="social + '-checkbox'" type="checkbox" :value="social" v-model="selectedSocials"></label>
+            <label :for="social + '-checkbox'"><input :id="social + '-checkbox'" type="checkbox" :value="social" v-model="selectedSocials"> {{ social }}</label>
+            <br>
         </template>
         <br>
         <button @click="postContent" :disabled="posting" id="post-button">Post</button>

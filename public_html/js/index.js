@@ -43,6 +43,7 @@ const app = new Vue({
                     const imgInput = document.getElementById('image');
                     imgInput.value = null;
                     imgInput.dispatchEvent(new Event('change'));
+                    this.selectedSocials.length = 0;
                     alert('Postato!');
                 } else if (res.status === 400) {
                     try {

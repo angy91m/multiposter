@@ -38,8 +38,8 @@ def upload_image(config, image_path, image_name):
         print('Failed to upload image: ' + image_name)
         raise Exception('Failed to upload image: ' + image_name)
 
-def _create_gui(loop, buttonCb, stopLoop, interval):
-    gui = CustomGui(loop, buttonCb, stopLoop, interval)
+def _create_gui(loop, buttonCb, stop_loop, interval):
+    gui = CustomGui(loop, buttonCb, stop_loop, interval)
     gui.title("Multiposter")
     return gui
 
@@ -142,11 +142,11 @@ async def _starter(cb, interval=1/120):
                 print('Please open a browser on: '+self_url)
     loop = asyncio.get_event_loop()
     continue_loop = True
-    def stopLoop():
+    def stop_loop():
         nonlocal continue_loop
         continue_loop = False
     
-    _create_gui(loop, start_browser, stopLoop, interval)
+    _create_gui(loop, start_browser, stop_loop, interval)
     start_browser()
     while continue_loop:
         await asyncio.sleep(interval)
