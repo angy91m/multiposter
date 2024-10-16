@@ -20,6 +20,11 @@
         <br>
         <img id="img-show" v-show="imageName" :src="imageContent" width="250" />
         <br>
+        <br>
+        <template v-for="social in socials">
+            <label :for="social + '-checkbox'">{{ social }} <input :id="social + '-checkbox'" type="checkbox" :value="social" v-model="selectedSocials"></label>
+        </template>
+        <br>
         <button @click="postContent" :disabled="posting" id="post-button">Post</button>
     </div>
     <script src="/js/index.js"></script>

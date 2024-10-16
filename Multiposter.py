@@ -55,16 +55,16 @@ async def _starter(cb, interval=1/120):
     async def post(req):
         try:
             data = await req.json()
-            if type(data['content']) == str or data['content'].strip() == '':
+            if type(data['content']) != str or data['content'].strip() == '':
                 return web.Response(
                     status=400,
                     content_type='application/json',
                     text=json.dumps({"error": "Empty content"})
                 )
             if (
-                type(data['socials']) == list
+                type(data['socials']) != list
                 or len(data['socials']) == 0
-                or any(type(social) != str or social.strip() == '' for social in data['socials'])
+                or any((type(social) != str or social.strip() == '') for social in data['socials'])
             ):
                 return web.Response(
                     status=400,
@@ -72,7 +72,8 @@ async def _starter(cb, interval=1/120):
                     text=json.dumps({"error": "Empty socials"})
                 )
             post = {
-                "content": data['content']
+                "content": data['content'],
+                "socials": data['socials']
             }
             if data.get('image'):
                 image_content = base64.b64decode(data['image']['content'].split('base64,')[1])

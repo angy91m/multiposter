@@ -7,11 +7,21 @@ const app = new Vue({
         posting: false,
         showEmojiPicker: false,
         lastEmojiInputField: '',
+        socials: [
+            'Facebook',
+            'Twitter',
+            'Telegram',
+            'Instagram'
+        ],
+        selectedSocials: []
     },
     methods: {
         async postContent() {
             this.posting = true;
-            const body = { content: this.content };
+            const body = {
+                content: this.content,
+                socials: this.selectedSocials.map(s => s.toLowerCase())
+            };
             if (this.imageName) {
                 body.image = {
                     name: this.imageName,
