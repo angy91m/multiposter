@@ -38,4 +38,6 @@ Create a `config.json` file like the example.
 Create a `main.py` file like the example.
 
 ## Compile to exe
+```powershell
 pyinstaller -F --add-data="config.json:." --add-data="public_html:." main.py
+```
