@@ -1,4 +1,4 @@
-import os, sys, subprocess, asyncio, base64
+import os, sys, subprocess, asyncio, base64, json
 from inspect import iscoroutinefunction
 from aiohttp import web
 from aiohttp_index import IndexMiddleware
@@ -36,14 +36,26 @@ async def _starter(cb, interval=1/120):
                 post['image'] = image_content
                 post['image_url'] = data['image']['content']
                 post['image_name'] = data['image']['name']
+                post['image_type'] = data['image']['type']
                 post['image_path'] = 'C:/tmp/mpop-post-image.png'
-            if (iscoroutinefunction(cb)):
-                await cb(post)
-            else:
-                cb(post)
-            return web.Response(status=200)
-        except ValueError:
-            return web.Response(status=400)
+            try:
+                if (iscoroutinefunction(cb)):
+                    await cb(post)
+                else:
+                    cb(post)
+                return web.Response(status=200)
+            except Exception as e:
+                return web.Response(
+                    status=400,
+                    content_type='application/json',
+                    text=json.dumps({"error": str(e)})
+                )
+        except:
+            return web.Response(
+                status=400,
+                content_type='application/json',
+                text=json.dumps({"error": "Invalid data"})
+            )
 
     app.add_routes(routes)
     runner = web.AppRunner(app)

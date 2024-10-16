@@ -15,13 +15,29 @@ const app = new Vue({
                 body.image = this.image;
             }
             try {
-                await fetch('/post', {
+                const res = await fetch('/post', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(body)
                 });
+                if (res.ok) {
+                    this.content = '';
+                    this.image = {};
+                    alert('Postato!');
+                } else if (res.status === 400) {
+                    try {
+                        const {error} = await res.json();
+                        alert('Errore: ' + error);
+                    } catch {
+                        alert('Qualcosa è andato storto');
+                    }
+                } else {
+                    alert('Qualcosa è andato storto');
+                }
+            } catch {
+                alert('Qualcosa è andato storto');
             } finally {
                 this.posting = false;
             }
@@ -33,6 +49,7 @@ const app = new Vue({
                     const reader = new FileReader();
                     reader.onload = () => {
                         this.image.name = imageFile.name;
+                        this.image.type = imageFile.type;
                         this.image.content = reader.result;
                     };
                     reader.readAsDataURL(imageFile);
