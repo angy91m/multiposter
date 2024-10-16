@@ -55,6 +55,22 @@ async def _starter(cb, interval=1/120):
     async def post(req):
         try:
             data = await req.json()
+            if type(data['content']) == str or data['content'].strip() == '':
+                return web.Response(
+                    status=400,
+                    content_type='application/json',
+                    text=json.dumps({"error": "Empty content"})
+                )
+            if (
+                type(data['socials']) == list
+                or len(data['socials']) == 0
+                or any(type(social) != str or social.strip() == '' for social in data['socials'])
+            ):
+                return web.Response(
+                    status=400,
+                    content_type='application/json',
+                    text=json.dumps({"error": "Empty socials"})
+                )
             post = {
                 "content": data['content']
             }
@@ -86,6 +102,7 @@ async def _starter(cb, interval=1/120):
                 post['image_name'] = image_name
                 post['image_type'] = image_type
                 post['image_path'] = app_path + '/uploaded_imgs/' + image_name
+                post['image_b64'] = data['image']['content']
             try:
                 if (iscoroutinefunction(cb)):
                     await cb(post)
