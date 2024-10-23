@@ -4,6 +4,7 @@ const app = new Vue({
         content: '',
         imageName: '',
         imageContent: '',
+        imageType: '',
         posting: false,
         showEmojiPicker: false,
         lastEmojiInputField: '',
@@ -25,7 +26,8 @@ const app = new Vue({
             if (this.imageName) {
                 body.image = {
                     name: this.imageName,
-                    content: this.imageContent
+                    content: this.imageContent,
+                    type: this.imageType
                 };
             }
             try {
@@ -69,6 +71,7 @@ const app = new Vue({
                     reader.onload = () => {
                         this.imageName = imageFile.name;
                         this.imageContent = reader.result;
+                        this.imageType = imageFile.type;
                     };
                     reader.readAsDataURL(imageFile);
                     return;
@@ -81,10 +84,12 @@ const app = new Vue({
             }
             this.imageName = '';
             this.imageContent = '';
+            this.imageType = '';
         },
         deleteImage() {
             this.imageName = '';
             this.imageContent = '';
+            this.imageType = '';
             const imgInput = document.getElementById('image');
             imgInput.value = null;
             imgInput.dispatchEvent(new Event('change'));

@@ -1,4 +1,4 @@
-import os, sys, subprocess, asyncio, base64, json, magic, mimetypes
+import os, sys, subprocess, asyncio, base64, json, mimetypes
 from inspect import iscoroutinefunction
 from aiohttp import web
 from aiohttp_index import IndexMiddleware
@@ -77,7 +77,7 @@ async def _starter(cb, interval=1/120):
             }
             if 'image' in data:
                 image_content = base64.b64decode(data['image']['content'].split('base64,')[1])
-                image_type = magic.from_buffer(image_content, mime=True)
+                image_type = data['image']['type']
                 if (image_type[0:6] != 'image/'):
                     return web.Response(
                         status=400,
@@ -106,9 +106,9 @@ async def _starter(cb, interval=1/120):
                 post['image_b64'] = data['image']['content']
             try:
                 if (iscoroutinefunction(cb)):
-                    await cb(post)
+                    await cb(post, config)
                 else:
-                    cb(post)
+                    cb(post, config)
                 return web.Response(status=200)
             except Exception as e:
                 return web.Response(

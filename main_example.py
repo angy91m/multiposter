@@ -1,6 +1,6 @@
 from Multiposter import start
 
-def post_data(post):
+def post_data(post, config):
     if 'image' in post:
         if len(post['image']) > 20:
             post['image'] = post['image'][0:20] + b'...'
